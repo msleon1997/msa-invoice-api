@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: msa-invoices
+  datasource:
+    url: jdbc:postgresql://localhost:5432/invoiceDB
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: admin123
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Opcionalmente puedes desactivar H2 si lo usabas
+  h2:
+    console:
+      enabled: false

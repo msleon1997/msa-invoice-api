@@ -64,9 +64,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public InvoiceHeader findByInvoiceNumber(String invoiceNumber){
-        return invoiceRepository.findByInvoiceNumber(invoiceNumber)
-                .orElseThrow(() -> new NotFoundException("Factura con el numero " + invoiceNumber + " no encontrada."));
+    public InvoiceHeader findByNumber(String number){
+        return invoiceRepository.findByNumber(number)
+                .orElseThrow(() -> new NotFoundException("Factura con el numero " + number + " no encontrada."));
 
     }
 

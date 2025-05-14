@@ -1,19 +1,15 @@
 package com.invoice.api.controller;
 
 import com.invoice.api.controller.api.InvoiceApi;
-import com.invoice.api.controller.dto.InvoiceDto;
 import com.invoice.api.domain.InvoiceDetail;
 import com.invoice.api.domain.InvoiceHeader;
 import com.invoice.api.services.InvoiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class InvoiceController implements InvoiceApi {
@@ -35,10 +31,28 @@ public class InvoiceController implements InvoiceApi {
 
 
     @Override
-    public ResponseEntity<InvoiceHeader> createInvoiceHeader(InvoiceHeader invoiceheader) {
-        InvoiceHeader savedInvoiceHeader = invoiceService.create(invoiceheader);
+    public ResponseEntity<InvoiceHeader> createInvoiceHeader(InvoiceHeader invoiceHeader) {
+        // relación bidireccional
+        if (invoiceHeader.getDetails() != null) {
+            for (InvoiceDetail detail : invoiceHeader.getDetails()) {
+                detail.setInvoice(invoiceHeader);
+                detail.calculateSubtotal();
+            }
+        }
+
+        //llamar a los metodos
+        invoiceHeader.calculateSubtotalAmount();
+        invoiceHeader.calculateVatAmount();
+        invoiceHeader.calculateTotalAmount();
+        //en caso de querer llamar al metodo para que sea randomico el numero de factura
+        invoiceHeader.generateRandomInvoiceNumber();
+
+
+        InvoiceHeader savedInvoiceHeader = invoiceService.create(invoiceHeader);
         return new ResponseEntity<>(savedInvoiceHeader, HttpStatus.CREATED);
     }
+
+
 
     @Override
     public ResponseEntity<List<InvoiceHeader>> findAll() {
@@ -53,8 +67,8 @@ public class InvoiceController implements InvoiceApi {
     }
 
     @Override
-    public ResponseEntity<InvoiceHeader> findByInvoiceNumber(@PathVariable String invoiceNumber) {
-        InvoiceHeader invoiceHeader = invoiceService.findByInvoiceNumber(invoiceNumber);
+    public ResponseEntity<InvoiceHeader> findByNumber(@PathVariable String number) {
+        InvoiceHeader invoiceHeader = invoiceService.findByNumber(number);
         return new ResponseEntity<>(invoiceHeader, HttpStatus.OK);
     }
 
@@ -85,8 +99,17 @@ public class InvoiceController implements InvoiceApi {
     public ResponseEntity<InvoiceDetail> createInvoiceDetail(InvoiceDetail invoiceDetail) {
         invoiceDetail.calculateSubtotal();
         InvoiceDetail savedInvoiceDetail = invoiceService.createInvoiceDetail(invoiceDetail);
+
+        // Lógica para recalcular montos del encabezado
+        InvoiceHeader invoiceHeader = savedInvoiceDetail.getInvoice();
+        invoiceHeader.calculateSubtotalAmount();
+        invoiceHeader.calculateVatAmount();
+        invoiceHeader.calculateTotalAmount();
+        invoiceService.update(invoiceHeader, invoiceHeader.getId().intValue());
+
         return new ResponseEntity<>(savedInvoiceDetail, HttpStatus.CREATED);
     }
+
 
     @Override
     public ResponseEntity<List<InvoiceDetail>> findAllDetail() {

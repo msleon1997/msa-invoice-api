@@ -5,10 +5,10 @@ spring:
   application:
     name: msa-invoices
   datasource:
-    url: jdbc:postgresql://localhost:5432/invoiceDB
+    url: jdbc:postgresql://localhost:5433/invoiceDB
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: admin123
+    password: invoice@123
 
   jpa:
     show-sql: true

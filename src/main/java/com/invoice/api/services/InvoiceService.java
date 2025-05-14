@@ -13,7 +13,7 @@ public interface InvoiceService {
 
     InvoiceHeader findById(Integer id);
     InvoiceDetail findByIdDetail(Integer id);
-    InvoiceHeader findByInvoiceNumber(String invoiceNumber);
+    InvoiceHeader findByNumber(String number);
     InvoiceHeader update(InvoiceHeader invoiceHeader, Integer id);
     InvoiceDetail update(InvoiceDetail invoiceDetail, Integer id);
 

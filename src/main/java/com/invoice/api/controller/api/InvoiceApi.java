@@ -26,9 +26,8 @@ public interface InvoiceApi {
     @GetMapping("/{id}")
     ResponseEntity<InvoiceHeader> findById(@PathVariable Long id);
 
-    @GetMapping("/number/{invoiceNumber}")
-    ResponseEntity<InvoiceHeader> findByInvoiceNumber(@PathVariable("invoiceNumber") String invoiceNumber);
-
+    @GetMapping("/number/{number}")
+    ResponseEntity<InvoiceHeader> findByNumber(@PathVariable("number") String number);
 
     @PutMapping("/{id}")
     ResponseEntity<InvoiceHeader> update(@RequestBody InvoiceHeader invoiceHeader, @PathVariable Integer id);

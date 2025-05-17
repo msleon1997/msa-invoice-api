@@ -7,7 +7,7 @@ import com.invoice.api.exceptions.InternalServerErrorException;
 import com.invoice.api.exceptions.NotContentException;
 import com.invoice.api.exceptions.NotFoundException;
 import com.invoice.api.repository.InvoiceDetailRepository;
-import com.invoice.api.repository.InvoiceRepository;
+import com.invoice.api.repository.InvoiceHeaderRepository;
 import com.invoice.api.services.InvoiceService;
 
 import org.springframework.stereotype.Service;
@@ -17,11 +17,11 @@ import java.util.List;
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
 
-    private final InvoiceRepository invoiceRepository;
+    private final InvoiceHeaderRepository invoiceHeaderRepository;
     private final InvoiceDetailRepository invoiceDetailRepository;
 
-    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, InvoiceDetailRepository invoiceDetailRepository) {
-        this.invoiceRepository = invoiceRepository;
+    public InvoiceServiceImpl(InvoiceHeaderRepository invoiceHeaderRepository, InvoiceDetailRepository invoiceDetailRepository) {
+        this.invoiceHeaderRepository = invoiceHeaderRepository;
         this.invoiceDetailRepository = invoiceDetailRepository;
     }
 
@@ -31,7 +31,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             if (invoiceHeader == null) {
                 throw new BadRequestException("la cabecera de la factura no puede ser nulo.");
             }
-            return invoiceRepository.save(invoiceHeader);
+            return invoiceHeaderRepository.save(invoiceHeader);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error al crear la factura.", e);
         }
@@ -53,7 +53,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceHeader findById(Integer id) {
-        return invoiceRepository.findById(id)
+        return invoiceHeaderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Factura con ID " + id + " no encontrada."));
     }
 
@@ -65,7 +65,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceHeader findByNumber(String number){
-        return invoiceRepository.findByNumber(number)
+        return invoiceHeaderRepository.findByNumber(number)
                 .orElseThrow(() -> new NotFoundException("Factura con el numero " + number + " no encontrada."));
 
     }
@@ -80,7 +80,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         InvoiceHeader invoiceToUpdate = this.findById(id);
         invoiceToUpdate.update(invoiceHeader);
-        return invoiceRepository.save(invoiceToUpdate);
+        return invoiceHeaderRepository.save(invoiceToUpdate);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public List<InvoiceHeader> getAll() {
-        List<InvoiceHeader> invoices = invoiceRepository.findAll();
+        List<InvoiceHeader> invoices = invoiceHeaderRepository.findAll();
         if (invoices.isEmpty()) {
             throw new NotContentException("No hay facturas registradas.");
         }
@@ -115,7 +115,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public void deleteById(Integer id) {
         this.findById(id); // Lanza NotFoundException si no existe
         try {
-            invoiceRepository.deleteById(id);
+            invoiceHeaderRepository.deleteById(id);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error al eliminar la factura.", e);
         }
@@ -138,7 +138,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         InvoiceHeader invoiceToUpdate = this.findById(id);
         invoiceToUpdate.updateInvoiceData(invoiceHeader.getDate());
-        return invoiceRepository.save(invoiceToUpdate);
+        return invoiceHeaderRepository.save(invoiceToUpdate);
     }
 
 //    @Override

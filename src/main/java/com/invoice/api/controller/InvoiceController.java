@@ -15,24 +15,14 @@ import java.util.List;
 public class InvoiceController implements InvoiceApi {
 
     private final InvoiceService invoiceService;
-
     public InvoiceController(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
     }
 
 
-//    @Override
-//    public ResponseEntity<InvoiceHeader> getFullInvoice(@PathVariable Long id) {
-//        Optional<InvoiceHeader> invoice = invoiceService.findInvoiceWithDetailsById(id);
-//        return invoice.map(ResponseEntity::ok)
-//                .orElseGet(() -> ResponseEntity.notFound().build());
-//    }
-
-
-
     @Override
     public ResponseEntity<InvoiceHeader> createInvoiceHeader(InvoiceHeader invoiceHeader) {
-        // relación bidireccional
+
         if (invoiceHeader.getDetails() != null) {
             for (InvoiceDetail detail : invoiceHeader.getDetails()) {
                 detail.setInvoice(invoiceHeader);
@@ -44,14 +34,9 @@ public class InvoiceController implements InvoiceApi {
         invoiceHeader.calculateSubtotalAmount();
         invoiceHeader.calculateVatAmount();
         invoiceHeader.calculateTotalAmount();
-        //en caso de querer llamar al metodo para que sea randomico el numero de factura
-        invoiceHeader.generateRandomInvoiceNumber();
-
-
         InvoiceHeader savedInvoiceHeader = invoiceService.create(invoiceHeader);
         return new ResponseEntity<>(savedInvoiceHeader, HttpStatus.CREATED);
     }
-
 
 
     @Override
@@ -92,8 +77,7 @@ public class InvoiceController implements InvoiceApi {
         return new ResponseEntity<>(updatedInvoiceHeader, HttpStatus.OK);
     }
 
-
-
+    
     // metodos para invoice details
     @Override
     public ResponseEntity<InvoiceDetail> createInvoiceDetail(InvoiceDetail invoiceDetail) {

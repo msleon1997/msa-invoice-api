@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class InvoiceDto {
+public class InvoiceDto_old {
     private InvoiceHeader invoiceHeader;
     private List<InvoiceDetail> invoiceDetails;
 

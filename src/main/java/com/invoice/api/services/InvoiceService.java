@@ -1,11 +1,9 @@
 package com.invoice.api.services;
 
-import com.invoice.api.controller.dto.InvoiceDto;
 import com.invoice.api.domain.InvoiceDetail;
 import com.invoice.api.domain.InvoiceHeader;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface InvoiceService {
     InvoiceHeader create(InvoiceHeader invoiceHeader);

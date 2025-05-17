@@ -65,11 +65,11 @@ public class InvoiceHeader {
         totalAmount = subtotalAmount.add(ivaAmount);
     }
 
-    public void generateRandomInvoiceNumber() {
-        String prefix = "INV-";
-        int randomNumber = (int) (Math.random() * 90000) + 10000;
-        this.number = prefix + randomNumber;
-    }
+//    public void generateRandomInvoiceNumber() {
+//        String prefix = "INV-";
+//        int randomNumber = (int) (Math.random() * 90000) + 10000;
+//        this.number = prefix + randomNumber;
+//    }
 
     public void update(InvoiceHeader invoiceHeader) {
         if (invoiceHeader == null) {

@@ -40,14 +40,21 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public InvoiceDetail createInvoiceDetail(InvoiceDetail invoiceDetail) {
         try {
+            if (invoiceDetail.getInvoice() == null || invoiceDetail.getInvoice().getId() == null) {
+                throw new BadRequestException("Debe proporcionar el ID del encabezado de factura.");
+            }
+
+            InvoiceHeader existingHeader = this.findById(invoiceDetail.getInvoice().getId().intValue());
+            invoiceDetail.setInvoice(existingHeader);
             invoiceDetail.calculateSubtotal();
             return invoiceDetailRepository.save(invoiceDetail);
+
         } catch (Exception e) {
-            String errorMessage = "Error al crear la factura. Detalles: " + e.getMessage();
-            e.printStackTrace();
+            String errorMessage = "Error al crear el detalle de la factura. Detalles: " + e.getMessage();
             throw new InternalServerErrorException(errorMessage, e);
         }
     }
+
 
 
 

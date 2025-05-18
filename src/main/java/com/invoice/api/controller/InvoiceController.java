@@ -94,8 +94,8 @@ public class InvoiceController implements InvoiceApi {
         invoiceDetail.calculateSubtotal();
         InvoiceDetail savedInvoiceDetail = invoiceService.createInvoiceDetail(invoiceDetail);
 
-        // Lógica para recalcular montos del encabezado
-        InvoiceHeader invoiceHeader = savedInvoiceDetail.getInvoice();
+        // Recalcular montos del header ya existente
+        InvoiceHeader invoiceHeader = invoiceService.findById(savedInvoiceDetail.getInvoice().getId().intValue());
         invoiceHeader.calculateSubtotalAmount();
         invoiceHeader.calculateVatAmount();
         invoiceHeader.calculateTotalAmount();
@@ -103,6 +103,7 @@ public class InvoiceController implements InvoiceApi {
 
         return new ResponseEntity<>(savedInvoiceDetail, HttpStatus.CREATED);
     }
+
 
 
     @Override

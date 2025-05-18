@@ -3,7 +3,6 @@ package com.invoice.api.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.invoice.api.constants.Constant;
-import com.invoice.api.domain.InvoiceDetail;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -32,8 +31,9 @@ public class InvoiceHeader {
     @NotBlank
     private String number;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
+
     @NotNull
     private String customerName;
     private BigDecimal subtotalAmount;
@@ -73,17 +73,27 @@ public class InvoiceHeader {
 
     public void update(InvoiceHeader invoiceHeader) {
         if (invoiceHeader == null) {
-            throw new RuntimeException("Fecha a actualiziar no puede ser null");
+            throw new RuntimeException("Factura a actualizar no puede ser null");
         }
 
         updateIfDifferent(this::getNumber, this::setNumber, invoiceHeader.getNumber());
         updateIfDifferent(this::getDate, this::setDate, invoiceHeader.getDate());
         updateIfDifferent(this::getCustomerName, this::setCustomerName, invoiceHeader.getCustomerName());
-        updateIfDifferent(this::getSubtotalAmount, this::setSubtotalAmount, invoiceHeader.getSubtotalAmount());
-        updateIfDifferent(this::getIvaAmount, this::setIvaAmount, invoiceHeader.getIvaAmount());
-        updateIfDifferent(this::getTotalAmount, this::setTotalAmount, invoiceHeader.getTotalAmount());
 
+        if (invoiceHeader.getDetails() != null) {
+            this.details.clear();
+            for (InvoiceDetail detail : invoiceHeader.getDetails()) {
+                detail.setInvoice(this);
+                detail.calculateSubtotal();
+                this.details.add(detail);
+            }
+        }
+
+        this.calculateSubtotalAmount();
+        this.calculateVatAmount();
+        this.calculateTotalAmount();
     }
+
 
     private <T> void updateIfDifferent(Supplier<T> getter, Consumer<T> setter, T newValue) {
         T currentValue = getter.get();
@@ -93,11 +103,13 @@ public class InvoiceHeader {
         }
     }
 
-    public void updateInvoiceData(LocalDateTime newDate) {
+    public void updateInvoiceDate(LocalDate newDate) {
         if (newDate == null) {
             throw new RuntimeException("Invoice date not be null!!");
         }
         this.setDate(newDate);
     }
+
+
 
 }

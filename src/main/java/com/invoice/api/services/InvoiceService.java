@@ -21,9 +21,7 @@ public interface InvoiceService {
     void deleteById(Integer id);
     void  deleteByIdDetail(Integer id);
     InvoiceHeader updateInvoiceByDate(InvoiceHeader invoiceHeader, Integer id);
-    //InvoiceDto createFullInvoice(InvoiceDto invoiceDto);
 
-    //Optional<InvoiceHeader> findInvoiceWithDetailsById(Long id);
 }
 
 

@@ -60,10 +60,20 @@ public class InvoiceController implements InvoiceApi {
 
     @Override
     public ResponseEntity<InvoiceHeader> update(InvoiceHeader invoiceHeader, Integer id) {
-        InvoiceHeader updateInvoiceHeader = invoiceService.update(invoiceHeader, id);
-
-        return new ResponseEntity<>(updateInvoiceHeader, HttpStatus.OK);
+        // Si vienen detalles, asegúrate de vincularlos y recalcular cada uno
+        if (invoiceHeader.getDetails() != null) {
+            for (InvoiceDetail detail : invoiceHeader.getDetails()) {
+                detail.setInvoice(invoiceHeader);
+                detail.calculateSubtotal();
+            }
+        }
+        invoiceHeader.calculateSubtotalAmount();
+        invoiceHeader.calculateVatAmount();
+        invoiceHeader.calculateTotalAmount();
+        InvoiceHeader updatedInvoiceHeader = invoiceService.update(invoiceHeader, id);
+        return new ResponseEntity<>(updatedInvoiceHeader, HttpStatus.OK);
     }
+
 
     @Override
     public ResponseEntity<Void> deleteById(Integer id) {
@@ -110,6 +120,11 @@ public class InvoiceController implements InvoiceApi {
     @Override
     public ResponseEntity<InvoiceDetail> updateDetail(InvoiceDetail invoiceDetail, Integer id) {
         InvoiceDetail updateInvoiceDetail = invoiceService.update(invoiceDetail, id);
+        InvoiceHeader invoiceHeader = updateInvoiceDetail.getInvoice();
+        invoiceHeader.calculateSubtotalAmount();
+        invoiceHeader.calculateVatAmount();
+        invoiceHeader.calculateTotalAmount();
+        invoiceService.update(invoiceHeader, invoiceHeader.getId().intValue());
         return new ResponseEntity<>(updateInvoiceDetail, HttpStatus.OK);
     }
 

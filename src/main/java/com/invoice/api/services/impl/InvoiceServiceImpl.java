@@ -137,7 +137,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new BadRequestException("La fecha de la factura es requerida.");
         }
         InvoiceHeader invoiceToUpdate = this.findById(id);
-        invoiceToUpdate.updateInvoiceData(invoiceHeader.getDate());
+        invoiceToUpdate.updateInvoiceDate(invoiceHeader.getDate());
         return invoiceHeaderRepository.save(invoiceToUpdate);
     }
 
